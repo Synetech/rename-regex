@@ -1,5 +1,5 @@
 // <copyright file="Program.cs" company="Nic Jansma">
-//  Copyright (c) Nic Jansma 2020 All Right Reserved
+//  Copyright (c) Nic Jansma 2021 All Right Reserved
 // </copyright>
 // <author>Nic Jansma</author>
 // <email>nic@nicj.net</email>
@@ -44,6 +44,7 @@ namespace RenameRegex
             string nameReplace;
             string fileMatch;
             bool recursive;
+            bool caseInsensitive;
             bool pretend;
             bool force;
             bool preserveExt;
@@ -56,6 +57,7 @@ namespace RenameRegex
                     out nameReplace,
                     out pretend,
                     out recursive,
+                    out caseInsensitive,
                     out force,
                     out preserveExt,
                     out includeMask))
@@ -123,6 +125,15 @@ namespace RenameRegex
                 }
 
                 // rename via a regex
+                if (caseInsensitive)
+                {
+                    fileNameAfter = Regex.Replace(fileName, nameSearch, nameReplace, RegexOptions.IgnoreCase);
+                }
+                else
+                {
+                    fileNameAfter = Regex.Replace(fileName, nameSearch, nameReplace);
+                }
+
                 string fileNameAfter = Regex.Replace(fileName, nameSearch, nameReplace, RegexOptions.IgnoreCase);
 
                 if (preserveExt)
@@ -205,6 +216,7 @@ namespace RenameRegex
             out string nameReplace,
             out bool pretend,
             out bool recursive,
+            out bool caseInsensitive,
             out bool force,
             out bool preserveExt,
             out int  includeMask)
@@ -219,6 +231,7 @@ namespace RenameRegex
             pretend     = false;
             recursive   = false;
             force       = false;
+            caseInsensitive = false;
             preserveExt = false;
             includeMask = 0;
 
@@ -246,6 +259,10 @@ namespace RenameRegex
                 else if (args[i].Equals("/r", StringComparison.OrdinalIgnoreCase))
                 {
                     recursive = true;
+                }
+                else if (args[i].Equals("/c", StringComparison.OrdinalIgnoreCase))
+                {
+                    caseInsensitive = true;
                 }
                 else if (args[i].Equals("/f", StringComparison.OrdinalIgnoreCase))
                 {
@@ -303,6 +320,7 @@ namespace RenameRegex
             Console.WriteLine(@"Usage: RR.exe file-match search replace [/p] [/r] [/f] [/e] [/files] [/dirs]");
             Console.WriteLine(@"        /p: pretend (show what will be renamed)");
             Console.WriteLine(@"        /r: recursive");
+            Console.WriteLine(@"        /c: case insensitive");
             Console.WriteLine(@"        /f: force overwrite if the file already exists");
             Console.WriteLine(@"        /e: preserve file extensions");
             Console.WriteLine(@"    /files: include files (default)");
